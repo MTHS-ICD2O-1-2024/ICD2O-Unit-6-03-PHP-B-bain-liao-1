@@ -27,39 +27,37 @@
       </div>
     </header>
     <main class="mdl-layout__content">
-      <div class="page-content">Click the button to get the current weather.
-        <br />
-        <br />
-        <form action="#">
-          <!-- Accent-colored raised button with ripple -->
-          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
-            type="submit">
-            Get Weather
-          </button>
-        </form>
-      </div>
+      <div class="page-content">Here is the current weather:</div>
+      </br>
+      </br>
       <?php
-      async () {
-        try {
-          $resultJSON = await fetch(
-            "https://api.openweathermap.org/data/2.5/weather?lat=45.4211435&lon=-75.6900574&appid=fe1d80e1e103cff8c6afd190cad23fa5"
-          )
-          $jsonData = await resultJSON.json();
-          console.log(jsonData);
-          $weatherDescription = jsonData.weather[0].description;
-          $weatherIconId = jsonData.weather[0].icon;
-          $weatherIconUrl = "https://openweathermap.org/img/wn/" + weatherIconId + "@2x.png";
-          $currentWeatherKelvin = jsonData.main.temp
-          $currentWeatherCelcius = currentWeatherKelvin - 273.15;
-      
-          // output
-          echo "<p> The current temperature is " + $currentWeatherCelcius.toFixed(0) + "°C. </p> </br> <p> The current weather is " +
-            $weatherDescription + ". </br> <img src =" + $weatherIconUrl + " alt='Weather Icon'>"
-        } catch (error) {
-          // If an error has occured
-          echo "Sorry, an error has occured. Please try again later."
-        }
+      // OpenWeatherMap API URL
+      $apiUrl = "https://api.openweathermap.org/data/2.5/weather?lat=45.4211435&lon=-75.6900574&appid=fe1d80e1e103cff8c6afd190cad23fa5";
+
+      // Fetch the weather data
+      $resultJSON = file_get_contents($apiUrl);
+
+      if ($resultJSON === FALSE) {
+        // If data fetch fails
+        echo "<div class='page-content'>Sorry, an error has occurred. Please try again later.</div>";
+        return;
       }
+
+      $jsonData = json_decode($resultJSON, true);
+
+      // Process
+      $weatherDescription = $jsonData['weather'][0]['description'];
+      $weatherIconId = $jsonData['weather'][0]['icon'];
+      $weatherIconUrl = "https://openweathermap.org/img/wn/" . $weatherIconId . "@2x.png";
+      $currentWeatherKelvin = $jsonData['main']['temp'];
+      $currentWeatherCelcius = $currentWeatherKelvin - 273.15;
+
+      // Output
+      echo "<div class='page-content'>";
+      echo "<p>The current temperature is " . round($currentWeatherCelcius) . "°C.</p>";
+      echo "<p>The current weather is " . $weatherDescription . ".</p>";
+      echo "<img src='" . $weatherIconUrl . "' alt='Weather Icon'>";
+      echo "</div>";
       ?>
     </main>
   </div>
